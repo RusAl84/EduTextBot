@@ -19,22 +19,14 @@ def get_question(test_data, num):
 def check_answer(test_data, num, answer_text):
     result = 0
     if num < len(test_data):
-
+        countIntersections=0
         keywords1=gk.getKeywords(answer_text)
-
-        nList=[]
-        cSet=set()
-        for item in test_data:
-            countIntersections=0
-            keywords2=item['keyWords']
-            for i1 in keywords1:
-                for i2 in keywords2:
-                    if i1==i2:
-                        countIntersections+=1
-            item['countIntersections']=countIntersections
-            nList.append(item)
-            cSet.add(countIntersections)
-        ciMax=max(list(cSet))
+        keywords2=test_data[num]['keyWords']
+        for i1 in keywords1:
+            for i2 in keywords2:
+                if i1==i2:
+                    countIntersections+=1
+        result = countIntersections / len(keywords1) * 100
     return result
 
 

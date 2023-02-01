@@ -4,12 +4,12 @@ import get_data as gd
 import tester as ts
 
 
-bot = telebot.TeleBot('5982175377:AAGJU-Qn8gPejnDymRFTpz_-bH_low5aTBI')
+bot = telebot.TeleBot('5982175377:AAE3k3Creiey8WPMeeZe7YwHffaj61gpSo4')
 global categories, test_data, test_num, mark, cur_cat, cur_theme
 categories = gd.load_data()
 test_data = ts.load_data()
-cur_cat = cur_theme = test_num = mark = 0
-
+cur_cat = cur_theme = test_num = 0
+mark =""
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
@@ -22,7 +22,6 @@ def get_text_messages(message):
         bot.send_message(
             message.from_user.id, "Привет, чем я могу тебе помочь? Для информации введите /help.")
     elif cur_cat == -1:
-
         if str(message.text).isdigit():
             cur_cat = int(message.text)
             str1 = gd.get_sub_categories(categories, cur_cat)
@@ -47,21 +46,18 @@ def get_text_messages(message):
     elif test_num > 0:
         cur_cat = 0
         cur_theme = 0
-        if str(message.text).isdigit():
-            mark += ts.check_answer(test_data, test_num - 1, int(message.text))
-            if test_num < len(test_data):
-                str1 = ts.get_question(test_data, test_num)
-                bot.send_message(
-                    message.from_user.id, str1)
-                test_num += 1
-            else:
-                test_num = 0
-                str1 = f"Вы ответили на {mark} вопросов из {len(test_data)} \n {help_message}"
-                bot.send_message(
-                    message.from_user.id, str1)
-        else:
+        result =ts.check_answer(test_data, test_num - 1, message.text)
+        mark+=f"\n Вопрос {test_num-1}: {result:.2f}%\n"
+        if test_num < len(test_data):
+            str1 = ts.get_question(test_data, test_num)
             bot.send_message(
-                message.from_user.id, "не верно введен ответ на вопрос (должна быть цифра)")
+                message.from_user.id, str1)
+            test_num += 1
+        else:
+            test_num = 0
+            str1 = f"{mark} \n \n {help_message}"
+            bot.send_message(
+                message.from_user.id, str1)
     elif str(message.text).lower() == "/info":
         cur_cat = -1
         str1 = gd.get_categories(categories)
@@ -72,7 +68,7 @@ def get_text_messages(message):
         cur_cat = 0
         cur_theme = 0
         test_num = 1
-        mark = 0
+        mark = ""
         bot.send_message(
             message.from_user.id, str1)
     elif str(message.text).lower() == "/help":
